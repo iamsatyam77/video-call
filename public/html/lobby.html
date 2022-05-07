@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peer Chat App</title>
+</head>
+<body>
+    <form id="joinRoom">
+        <input type="text" name="invite_join_link" required/>
+        <input type="submit" value="Join or Create Room"/>
+    </form>
+
+    <script>
+     const form = document.getElementById("joinRoom");
+     form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inviteLink = e.target.invite_join_link.value
+        window.location=`/?room=${inviteLink}`;
+     });
+    </script>
+</body>
+</html>

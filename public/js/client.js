@@ -1,7 +1,17 @@
 const socket = io();
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const room = urlParams.get("room");
+
+if (!room) {
+  window.location = "lobby";
+}
 
 const constraints = {
-  video: true,
+  video: {
+    width: { min: 640, ideal: 1920, max: 1920 },
+    height: { min: 480, ideal: 1080, max: 1080 },
+  },
   audio: true,
 };
 
@@ -36,6 +46,8 @@ const createPeerConnection = async (socketId) => {
 
   remoteStream = new MediaStream();
   document.getElementById("user-2").srcObject = remoteStream;
+  document.getElementById("user-2").style.display = "block";
+
   if (!localStream) {
     localStream = await navigator.mediaDevices.getUserMedia(constraints);
     document.getElementById("user-1").srcObject = localStream;
@@ -58,8 +70,7 @@ const createPeerConnection = async (socketId) => {
       socket.emit(
         "sendMessage",
         JSON.stringify({
-          // socketId,
-          room: "main",
+          room,
           type: "candidate",
           candidate: event.candidate,
         })
@@ -82,8 +93,7 @@ const createOffer = async (socketId) => {
   socket.emit(
     "sendMessage",
     JSON.stringify({
-      // socketId: socketId,
-      room: "main",
+      room,
       type: "offer",
       offer,
     })
@@ -102,8 +112,7 @@ const createAnswer = async (socketId, offer) => {
   socket.emit(
     "sendMessage",
     JSON.stringify({
-      // socketId: socketId,
-      room: "main",
+      room,
       type: "answer",
       answer,
     })
@@ -145,17 +154,57 @@ const handleOnMessageFromPeer = async (message) => {
   }
 };
 
-const handleUserLeft = async (event) => {
-  socket.emit("leaveRoom", "main");
+const handleUserLeft = async () => {
+  socket.emit("leaveRoom", room);
 };
 
 const initializeChannelAndListeners = async () => {
-  socket.emit("addRoom", "main");
+  socket.emit("addRoom", room);
   socket.on("userJoined", handleUserJoined);
   socket.on("userleft", handleUserLeft);
   socket.on("messageFromPeer", handleOnMessageFromPeer);
 };
 
+const toggleMic = () => {
+  const audioTrack = localStream
+    .getTracks()
+    .find((track) => track.kind === "audio");
+
+  if (audioTrack.enabled) {
+    audioTrack.enabled = false;
+    document.getElementById("audio-btn").style.backgroundColor =
+      "rgb(128, 128, 128)";
+  } else {
+    audioTrack.enabled = true;
+    document.getElementById("audio-btn").style.backgroundColor =
+      "rgb(65, 105, 225)";
+  }
+};
+
+const toggleCamera = () => {
+  const videoTrack = localStream
+    .getTracks()
+    .find((track) => track.kind === "video");
+
+  if (videoTrack.enabled) {
+    videoTrack.enabled = false;
+    document.getElementById("camera-btn").style.backgroundColor =
+      "rgb(128, 128, 128)";
+  } else {
+    videoTrack.enabled = true;
+    document.getElementById("camera-btn").style.backgroundColor =
+      "rgb(65, 105, 225)";
+  }
+};
+
+const hangUpCall = () => {
+  handleUserLeft();
+  window.location = "lobby";
+};
+
 window.addEventListener("beforeunload", handleUserLeft);
+document.getElementById("camera-btn").addEventListener("click", toggleCamera);
+document.getElementById("audio-btn").addEventListener("click", toggleMic);
+document.getElementById("hang-up-btn").addEventListener("click", hangUpCall);
 
 init();

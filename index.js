@@ -14,6 +14,10 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
+app.get("/lobby", (req, res) => {
+  res.sendFile(__dirname + "/public/html/lobby.html");
+});
+
 io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
   connections.push(socket);
@@ -27,7 +31,7 @@ io.on("connection", (socket) => {
       console.log("already_full");
     } else if (numClients === 1) {
       socket.join(room);
-      io.in(room).emit("userJoined");
+      socket.broadcast.to(room).emit("userJoined");
       // socket.to(room).emit("userJoined", socket.id);
     } else {
       socket.join(room);
@@ -59,6 +63,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3000, () => {
+server.listen(80, () => {
   console.log("listening on *:3000");
 });

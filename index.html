@@ -3,14 +3,31 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Page Title</title>
+    <title>Peer Chat App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+      href="/css/index.css"
+    />
   </head>
   <body>
     <div class="video-devices">
       <video class="video-device" id="user-1" autoplay></video>
       <video class="video-device" id="user-2" autoplay></video>
+    </div>
+
+    <div id="controls">
+      <div class="control-container" id="camera-btn">
+        <img src="/icons/camera.png"/>
+      </div>
+      <div class="control-container" id="audio-btn">
+        <img src="/icons/mic.png"/>
+      </div>
+      <div class="control-container" id="hang-up-btn">
+        <img src="/icons/phone.png"/>
+      </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/client.js"></script>
