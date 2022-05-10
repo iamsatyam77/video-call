@@ -38,17 +38,12 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on('leaveRoom', async (room) => {
+  socket.on("leaveRoom", async (room) => {
     socket.leave(room);
-  })
+  });
 
   socket.on("sendMessage", (info) => {
     const parsedInfo = JSON.parse(info);
-    // if (!parsedInfo.socketId) {
-    //   io.sockets.to(parsedInfo.room).emit("messageFromPeer", info);
-    // } else {
-    //   io.to(parsedInfo.socketId).emit("messageFromPeer", info);
-    // }
     socket.to(parsedInfo.room).emit("messageFromPeer", info);
   });
 
