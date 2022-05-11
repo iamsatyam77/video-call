@@ -232,9 +232,9 @@ if (!room) {
   document.getElementById("camera-btn").addEventListener("click", toggleCamera);
   document.getElementById("audio-btn").addEventListener("click", toggleMic);
   document.getElementById("hang-up-btn").addEventListener("click", hangUpCall);
-  document
-    .getElementById("back-btn")
-    .addEventListener("click", handleOnBackClick);
+  // document
+  //   .getElementById("back-btn")
+  //   .addEventListener("click", handleOnBackClick);
 
   init();
 }
