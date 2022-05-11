@@ -40,7 +40,7 @@ if (!room) {
       document.getElementById("title").innerText = `You are in Room: ${room}`;
     } catch (error) {
       console.error("Error accessing media devices.", error);
-      document.getElementById("no-display").style.display = "block";
+      // document.getElementById("no-display").style.display = "block";
       document.getElementById("display-video").style.display = "none";
     }
   };
