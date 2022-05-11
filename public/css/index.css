@@ -1,52 +1,68 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .video-devices {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.video-devices-single {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 1rem;
 }
 
 .video-device {
-    width: 100%;
-    height: 300px;
-    background-color: black;
+  width: 100%;
+  height: 300px;
+  background-color: black;
 }
 
 #user-2 {
-    display: none;
+  display: none;
 }
 
 #controls {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    right: 50%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  right: 50%;
 }
 
 .control-container {
-    background-color: rgb(65, 105, 225);
-    padding: 1rem;
-    margin: 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border-radius: 50%;
+  background-color: rgb(65, 105, 225);
+  padding: 1rem;
+  margin: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
 }
 
 #hang-up-btn {
-    background-color: red;
+  background-color: red;
 }
 
 .control-container img {
-    height: 30px;
-    width:30px;
+  height: 30px;
+  width: 30px;
+}
+
+.center {
+  text-align: center;
+}
+
+.center-red {
+  text-align: center;
+  color: red;
 }

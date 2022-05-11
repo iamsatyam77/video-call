@@ -7,15 +7,16 @@ const io = new Server(server);
 
 const connections = [];
 const clients = [];
+const PORT = process.env.PORT || 5000;
 
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "/public/html/lobby.html");
 });
 
-app.get("/lobby", (req, res) => {
-  res.sendFile(__dirname + "/public/html/lobby.html");
+app.get("/index", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
 });
 
 io.on("connection", (socket) => {
@@ -32,23 +33,18 @@ io.on("connection", (socket) => {
     } else if (numClients === 1) {
       socket.join(room);
       socket.broadcast.to(room).emit("userJoined");
-      // socket.to(room).emit("userJoined", socket.id);
     } else {
       socket.join(room);
     }
   });
 
-  socket.on('leaveRoom', async (room) => {
+  socket.on("leaveRoom", async (room) => {
     socket.leave(room);
-  })
+    socket.broadcast.to(room).emit("userLeftRoom");
+  });
 
   socket.on("sendMessage", (info) => {
     const parsedInfo = JSON.parse(info);
-    // if (!parsedInfo.socketId) {
-    //   io.sockets.to(parsedInfo.room).emit("messageFromPeer", info);
-    // } else {
-    //   io.to(parsedInfo.socketId).emit("messageFromPeer", info);
-    // }
     socket.to(parsedInfo.room).emit("messageFromPeer", info);
   });
 
@@ -63,6 +59,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(80, () => {
-  console.log("listening on *:3000");
+server.listen(PORT, () => {
+  console.log(`listening on PORT:${PORT}`);
 });
