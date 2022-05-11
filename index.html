@@ -13,23 +13,29 @@
     />
   </head>
   <body>
-    <h1 id="title" class="center"></h1>
-    <p id="userLeftMessage"></p>
-    <div id="video-container" class="video-devices-single">
-      <video class="video-device" id="user-1" autoplay></video>
-      <video class="video-device" id="user-2" autoplay></video>
+    <div id="display-video">
+      <h1 id="title" class="center"></h1>
+      <p id="userLeftMessage" class="center-red"></p>
+      <div id="video-container" class="video-devices-single">
+        <video class="video-device" id="user-1" autoplay></video>
+        <video class="video-device" id="user-2" autoplay></video>
+      </div>
+  
+      <div id="controls">
+        <div class="control-container" id="camera-btn">
+          <img src="/icons/camera.png" />
+        </div>
+        <div class="control-container" id="audio-btn">
+          <img src="/icons/mic.png" />
+        </div>
+        <div class="control-container" id="hang-up-btn">
+          <img src="/icons/phone.png" />
+        </div>
+      </div>
     </div>
-
-    <div id="controls">
-      <div class="control-container" id="camera-btn">
-        <img src="/icons/camera.png" />
-      </div>
-      <div class="control-container" id="audio-btn">
-        <img src="/icons/mic.png" />
-      </div>
-      <div class="control-container" id="hang-up-btn">
-        <img src="/icons/phone.png" />
-      </div>
+    <div id="no-display">
+      <h3 class="center-red">No streaming device found!!</h3>
+      <button id="back-btn">Go back to lobby</button>
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/client.js"></script>

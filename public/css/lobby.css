@@ -11,4 +11,5 @@ form {
   border-radius: 1rem;
   color: white;
   border-color: rgb(65, 105, 225);
+  padding: 3px;
 }
