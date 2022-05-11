@@ -31,14 +31,13 @@ if (!room) {
 
   const init = async () => {
     try {
+      await initializeChannelAndListeners();
       // const devices = await navigator.mediaDevices.enumerateDevices();
       // const videoDevice = devices.filter((device) => device.kind === 'videoinput');
       // console.log(`Media devices are: ${JSON.stringify(devices)}`);
       localStream = await navigator.mediaDevices.getUserMedia(constraints);
       document.getElementById("user-1").srcObject = localStream;
       document.getElementById("title").innerText = `You are in Room: ${room}`;
-
-      await initializeChannelAndListeners();
     } catch (error) {
       console.error("Error accessing media devices.", error);
       document.getElementById("no-display").style.display = "block";
