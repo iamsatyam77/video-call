@@ -41,16 +41,24 @@ if (!room) {
     } catch (error) {
       console.error("Error accessing media devices.", error);
       // document.getElementById("no-display").style.display = "block";
-      document.getElementById("display-video").style.display = "none";
+      // document.getElementById("display-video").style.display = "none";
     }
   };
 
   const createPeerConnection = async (socketId) => {
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
 
-    remoteStream = new MediaStream();
-    document.getElementById("user-2").srcObject = remoteStream;
-    document.getElementById("user-2").style.display = "block";
+    // remoteStream = new MediaStream();
+    const video = document.createElement("video");
+    video.autoplay = true;
+    video.id = `user-${socketId}`;
+    video.classList.add("video-device");
+    document.getElementById("video-container").appendChild(video);
+    // document.getElementById(`user-${socketId}`).srcObject = remoteStream;
+    // video.srcObject = remoteStream;
+
+    // document.getElementById("user-2").srcObject = remoteStream;
+    // document.getElementById("user-2").style.display = "block";
     document.getElementById("video-container").classList.add("video-devices");
     document
       .getElementById("video-container")
@@ -66,10 +74,10 @@ if (!room) {
     });
 
     peerConnection.ontrack = async (event) => {
-      event.streams[0].getTracks().forEach((track) => {
-        remoteStream.addTrack(track);
-      });
-      // document.getElementById("user-2").srcObject = event.streams[0];
+      // event.streams[0].getTracks().forEach((track) => {
+      //   remoteStream.addTrack(track);
+      // });
+      document.getElementById(`user-${socketId}`).srcObject = event.streams[0];
     };
 
     peerConnection.onicecandidate = async (event) => {
@@ -163,12 +171,13 @@ if (!room) {
   };
 
   const handleUserLeft = async () => {
-    socket.emit("leaveRoom", room);
+    socket.emit("leaveRoom", JSON.stringify({room, socketId: socket.id}));
     room = null;
   };
 
-  const handleUserLeftRoom = async () => {
-    document.getElementById("user-2").style.display = "none";
+  const handleUserLeftRoom = async (socketId) => {
+    document.getElementById(`user-${socketId}`).remove();
+    // document.getElementById("user-2").style.display = "none";
     document
       .getElementById("video-container")
       .classList.add("video-devices-single");

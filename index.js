@@ -28,19 +28,23 @@ io.on("connection", (socket) => {
   socket.on("addRoom", async (room) => {
     const clients = io.sockets.adapter.rooms.get(room);
     const numClients = typeof clients !== "undefined" ? clients.size : 0;
-    if (numClients > 1) {
+    if (numClients > 4) {
       console.log("already_full");
-    } else if (numClients === 1) {
+    } else if (numClients <= 4 && numClients > 1) {
       socket.join(room);
-      socket.broadcast.to(room).emit("userJoined");
+      io.sockets.in(room).emit('userJoined', socket.id);
+    } else if (numClients == 1) {
+      socket.join(room);
+      socket.broadcast.to(room).emit("userJoined", socket.id);
     } else {
       socket.join(room);
     }
   });
 
-  socket.on("leaveRoom", async (room) => {
-    socket.leave(room);
-    socket.broadcast.to(room).emit("userLeftRoom");
+  socket.on("leaveRoom", async (roomInfo) => {
+    const parsedRoomInfo = JSON.parse(roomInfo);
+    socket.leave(parsedRoomInfo.room);
+    socket.broadcast.to(parsedRoomInfo.room).emit("userLeftRoom", parsedRoomInfo.socketId);
   });
 
   socket.on("sendMessage", (info) => {
