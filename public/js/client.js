@@ -178,6 +178,7 @@ if (!room) {
       .getElementById("video-container")
       .classList.remove("video-devices");
     document.getElementById("mute-speaker-btn").style.display = "none";
+    document.getElementById("userLeftMessage").style.display = 'block';
     document.getElementById("userLeftMessage").innerText =
       "Other member has left this room, please end this call and join/create other call.";
   };
