@@ -70,6 +70,8 @@ if (!room) {
         remoteStream.addTrack(track);
       });
       // document.getElementById("user-2").srcObject = event.streams[0];
+      document.getElementById("userLeftMessage").style.display = "none";
+      document.getElementById("mute-speaker-btn").style.display = "block";
     };
 
     peerConnection.onicecandidate = async (event) => {
@@ -175,6 +177,7 @@ if (!room) {
     document
       .getElementById("video-container")
       .classList.remove("video-devices");
+    document.getElementById("mute-speaker-btn").style.display = "none";
     document.getElementById("userLeftMessage").innerText =
       "Other member has left this room, please end this call and join/create other call.";
   };
@@ -229,9 +232,15 @@ if (!room) {
   };
 
   const muteOtherUser = async () => {
-    document.getElementById("user-2").hasAttribute("muted")
-      ? document.getElementById("user-2").removeAttribute("muted")
-      : (document.getElementById("user-2").muted = true);
+    if (document.getElementById("user-2").hasAttribute("muted")) {
+      document.getElementById("user-2").removeAttribute("muted");
+      document.getElementById("mute-speaker-btn").style.backgroundColor =
+        "rgb(65, 105, 225)";
+    } else {
+      document.getElementById("user-2").muted = true;
+      document.getElementById("mute-speaker-btn").style.backgroundColor =
+        "rgb(128, 128, 128)";
+    }
   };
 
   window.addEventListener("beforeunload", handleUserLeft);
