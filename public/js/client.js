@@ -232,14 +232,18 @@ if (!room) {
   };
 
   const muteOtherUser = async () => {
-    if (document.getElementById("user-2").hasAttribute("muted")) {
-      document.getElementById("user-2").removeAttribute("muted");
-      document.getElementById("mute-speaker-btn").style.backgroundColor =
-        "rgb(65, 105, 225)";
-    } else {
-      document.getElementById("user-2").setAttribute('muted', true);
+    const audioTrack = remoteStream
+      .getTracks()
+      .find((track) => track.kind === "audio");
+
+    if (audioTrack.enabled) {
+      audioTrack.enabled = false;
       document.getElementById("mute-speaker-btn").style.backgroundColor =
         "rgb(128, 128, 128)";
+    } else {
+      audioTrack.enabled = true;
+      document.getElementById("mute-speaker-btn").style.backgroundColor =
+        "rgb(65, 105, 225)";
     }
   };
 
