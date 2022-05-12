@@ -237,7 +237,7 @@ if (!room) {
       document.getElementById("mute-speaker-btn").style.backgroundColor =
         "rgb(65, 105, 225)";
     } else {
-      document.getElementById("user-2").muted = true;
+      document.getElementById("user-2").setAttribute('muted', true);
       document.getElementById("mute-speaker-btn").style.backgroundColor =
         "rgb(128, 128, 128)";
     }
