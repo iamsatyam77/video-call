@@ -228,10 +228,19 @@ if (!room) {
     window.location = "/";
   };
 
+  const muteOtherUser = async () => {
+    document.getElementById("user-2").hasAttribute("muted")
+      ? document.getElementById("user-2").removeAttribute("muted")
+      : (document.getElementById("user-2").muted = true);
+  };
+
   window.addEventListener("beforeunload", handleUserLeft);
   document.getElementById("camera-btn").addEventListener("click", toggleCamera);
   document.getElementById("audio-btn").addEventListener("click", toggleMic);
   document.getElementById("hang-up-btn").addEventListener("click", hangUpCall);
+  document
+    .getElementById("mute-speaker-btn")
+    .addEventListener("click", muteOtherUser);
   // document
   //   .getElementById("back-btn")
   //   .addEventListener("click", handleOnBackClick);
