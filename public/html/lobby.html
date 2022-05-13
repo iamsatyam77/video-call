@@ -10,7 +10,7 @@
       media="screen"
       href="/css/lobby.css"
     />
-    <link rel="icon" type="image/ico" href="/icons/favicon.ico"/>
+    <link rel="icon" type="image/ico" href="/icons/favicon.ico" />
     <title>Peer Call App</title>
   </head>
   <body>
@@ -18,14 +18,22 @@
       <input type="text" name="invite_join_link" required />
       <input id="submit-button" type="submit" value="Join or Create Room" />
     </form>
-
-    <script>
-      const form = document.getElementById("joinRoom");
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const inviteLink = e.target.invite_join_link.value;
-        window.location = `/index?room=${inviteLink}`;
-      });
-    </script>
+    <footer>
+      <span style="text-align: center">
+        &copy;
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        Satyam Tyagi. All rights reserved
+      </span>
+    </footer>
   </body>
+  <script>
+    const form = document.getElementById("joinRoom");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const inviteLink = e.target.invite_join_link.value;
+      window.location = `/index?room=${inviteLink}`;
+    });
+  </script>
 </html>

@@ -13,3 +13,9 @@ form {
   border-color: rgb(65, 105, 225);
   padding: 3px;
 }
+
+footer {
+  position: fixed;
+  bottom: 0;
+  padding: 2px;
+}

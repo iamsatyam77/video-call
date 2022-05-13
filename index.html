@@ -11,19 +11,31 @@
       media="screen"
       href="/css/index.css"
     />
-    <link rel="icon" type="image/ico" href="/icons/favicon.ico"/>
+    <link rel="icon" type="image/ico" href="/icons/favicon.ico" />
   </head>
   <body>
+    <div>
+    </div>
     <div id="display-video">
       <!-- <h1 id="title" class="center"></h1> -->
-      <p id="userLeftMessage" class="center-red" style="display: none;"></p>
+      <p id="userLeftMessage" class="center-red" style="display: none"></p>
       <div id="video-container">
-        <video class="video-device" id="user-1" autoplay muted playsinline></video>
+        <video
+          class="video-device"
+          id="user-1"
+          autoplay
+          muted
+          playsinline
+        ></video>
         <video class="video-device" id="user-2" autoplay playsinline></video>
       </div>
 
       <div id="controls">
-        <div class="control-container" id="mute-speaker-btn" style="display: none;">
+        <div
+          class="control-container"
+          id="mute-speaker-btn"
+          style="display: none"
+        >
           <img src="/icons/speaker.png" />
         </div>
         <div class="control-container" id="camera-btn">
@@ -37,9 +49,18 @@
         </div>
       </div>
     </div>
-    <div id="no-display" style="display: none;">
+    <div id="no-display" style="display: none">
       <h3 class="center-red">No streaming device found!!</h3>
       <button id="back-btn">Go back to lobby</button>
+      <footer>
+        <span style="text-align: center">
+          &copy;
+          <script>
+            document.write(new Date().getFullYear());
+          </script>
+          Satyam Tyagi. All rights reserved
+        </span>
+      </footer>
     </div>
   </body>
   <script src="/socket.io/socket.io.js"></script>

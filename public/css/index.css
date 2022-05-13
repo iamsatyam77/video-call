@@ -105,3 +105,9 @@
     width: 20px;
   }
 }
+
+footer {
+  position: fixed;
+  bottom: 0;
+  padding: 2px;
+}
