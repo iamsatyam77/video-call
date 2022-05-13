@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Peer Chat App</title>
+    <title>Peer Call App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
@@ -11,14 +11,15 @@
       media="screen"
       href="/css/index.css"
     />
+    <link rel="icon" type="image/ico" href="/icons/favicon.ico"/>
   </head>
   <body>
     <div id="display-video">
-      <h1 id="title" class="center"></h1>
-      <p id="userLeftMessage" class="center-red"></p>
-      <div id="video-container" class="video-devices-single">
-        <video class="video-device" id="user-1" autoplay muted></video>
-        <video class="video-device" id="user-2" autoplay></video>
+      <!-- <h1 id="title" class="center"></h1> -->
+      <p id="userLeftMessage" class="center-red" style="display: none;"></p>
+      <div id="video-container">
+        <video class="video-device" id="user-1" autoplay muted playsinline></video>
+        <video class="video-device" id="user-2" autoplay playsinline></video>
       </div>
 
       <div id="controls">
@@ -36,11 +37,11 @@
         </div>
       </div>
     </div>
-    <!-- <div id="no-display" style="display: none;">
+    <div id="no-display" style="display: none;">
       <h3 class="center-red">No streaming device found!!</h3>
       <button id="back-btn">Go back to lobby</button>
-    </div> -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/client.js"></script>
+    </div>
   </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/client.js"></script>
 </html>

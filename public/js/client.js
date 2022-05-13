@@ -37,10 +37,10 @@ if (!room) {
       // console.log(`Media devices are: ${JSON.stringify(devices)}`);
       localStream = await navigator.mediaDevices.getUserMedia(constraints);
       document.getElementById("user-1").srcObject = localStream;
-      document.getElementById("title").innerText = `You are in Room: ${room}`;
+      // document.getElementById("title").innerText = `You are in Room: ${room}`;
     } catch (error) {
       console.error("Error accessing media devices.", error);
-      // document.getElementById("no-display").style.display = "block";
+      document.getElementById("no-display").style.display = "flex";
       document.getElementById("display-video").style.display = "none";
     }
   };
@@ -51,13 +51,17 @@ if (!room) {
     remoteStream = new MediaStream();
     document.getElementById("user-2").srcObject = remoteStream;
     document.getElementById("user-2").style.display = "block";
-    document.getElementById("video-container").classList.add("video-devices");
-    document
-      .getElementById("video-container")
-      .classList.remove("video-devices-single");
+    // document.getElementById("video-container").classList.add("video-devices");
+    // document
+    //   .getElementById("video-container")
+    //   .classList.remove("video-devices-single");
+    document.getElementById("user-1").classList.add("smallFrame");
 
     if (!localStream) {
-      localStream = await navigator.mediaDevices.getUserMedia(constraints);
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
       document.getElementById("user-1").srcObject = localStream;
     }
 
@@ -170,17 +174,19 @@ if (!room) {
   };
 
   const handleUserLeftRoom = async () => {
+    // document.getElementById("user-2").style.display = "none";
+    // document
+    //   .getElementById("video-container")
+    //   .classList.add("video-devices-single");
+    // document
+    //   .getElementById("video-container")
+    //   .classList.remove("video-devices");
     document.getElementById("user-2").style.display = "none";
-    document
-      .getElementById("video-container")
-      .classList.add("video-devices-single");
-    document
-      .getElementById("video-container")
-      .classList.remove("video-devices");
+    document.getElementById("user-1").classList.remove("smallFrame");
     document.getElementById("mute-speaker-btn").style.display = "none";
-    document.getElementById("userLeftMessage").style.display = 'block';
+    document.getElementById("userLeftMessage").style.display = "block";
     document.getElementById("userLeftMessage").innerText =
-      "Other member has left this room, please end this call and join/create other call.";
+      "Other member has left this room!";
   };
 
   const initializeChannelAndListeners = async () => {
@@ -255,9 +261,9 @@ if (!room) {
   document
     .getElementById("mute-speaker-btn")
     .addEventListener("click", muteOtherUser);
-  // document
-  //   .getElementById("back-btn")
-  //   .addEventListener("click", handleOnBackClick);
+  document
+    .getElementById("back-btn")
+    .addEventListener("click", handleOnBackClick);
 
   init();
 }
