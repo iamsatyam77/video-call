@@ -28,11 +28,9 @@ io.on("connection", (socket) => {
   socket.on("addRoom", async (room) => {
     const clients = io.sockets.adapter.rooms.get(room);
     const numClients = typeof clients !== "undefined" ? clients.size : 0;
-    if (numClients > 1) {
-      console.log("already_full");
-    } else if (numClients === 1) {
+    if (numClients >= 1) {
       socket.join(room);
-      socket.broadcast.to(room).emit("userJoined");
+      socket.broadcast.to(room).emit("userJoined", socket.id);
     } else {
       socket.join(room);
     }
@@ -40,12 +38,18 @@ io.on("connection", (socket) => {
 
   socket.on("leaveRoom", async (room) => {
     socket.leave(room);
-    socket.broadcast.to(room).emit("userLeftRoom");
+    socket.broadcast.to(room).emit("userLeftRoom", socket.id);
   });
 
   socket.on("sendMessage", (info) => {
     const parsedInfo = JSON.parse(info);
-    socket.to(parsedInfo.room).emit("messageFromPeer", info);
+
+    socket
+      .to(parsedInfo.room)
+      .emit(
+        "messageFromPeer",
+        JSON.stringify({ ...parsedInfo, socketId: socket.id })
+      );
   });
 
   socket.on("disconnect", () => {

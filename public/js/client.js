@@ -20,14 +20,15 @@ if (!room) {
         urls: [
           "stun:stun1.l.google.com:19302",
           "stun:stun2.l.google.com:19302",
+          "stun:stun3.l.google.com:19302",
         ],
       },
     ],
   };
 
   let localStream;
-  let remoteStream;
-  let peerConnection;
+  let remoteStream = {};
+  let peerConnection = {};
 
   const init = async () => {
     try {
@@ -36,8 +37,9 @@ if (!room) {
       // const videoDevice = devices.filter((device) => device.kind === 'videoinput');
       // console.log(`Media devices are: ${JSON.stringify(devices)}`);
       localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      document.getElementById("user-1").srcObject = localStream;
-      // document.getElementById("title").innerText = `You are in Room: ${room}`;
+      await addUserToDom(socket.id, true);
+      document.getElementById(`user-${socket.id}`).srcObject = localStream;
+      socket.emit("addRoom", room);
     } catch (error) {
       console.error("Error accessing media devices.", error);
       document.getElementById("no-display").style.display = "flex";
@@ -46,96 +48,114 @@ if (!room) {
   };
 
   const createPeerConnection = async (socketId) => {
-    peerConnection = new RTCPeerConnection(peerConnectionConfig);
+    try {
+      peerConnection[socketId] = new RTCPeerConnection(peerConnectionConfig);
 
-    remoteStream = new MediaStream();
-    document.getElementById("user-2").srcObject = remoteStream;
-    document.getElementById("user-2").style.display = "block";
-    // document.getElementById("video-container").classList.add("video-devices");
-    // document
-    //   .getElementById("video-container")
-    //   .classList.remove("video-devices-single");
-    document.getElementById("user-1").classList.add("smallFrame");
+      remoteStream[socketId] = new MediaStream();
+      await addUserToDom(socketId);
+      document.getElementById(`user-${socketId}`).srcObject =
+        remoteStream[socketId];
+      document.getElementById(`user-${socketId}`).style.display = "block";
+      document.getElementById(`user-${socket.id}`).classList.add("smallFrame");
 
-    if (!localStream) {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      document.getElementById("user-1").srcObject = localStream;
-    }
-
-    localStream.getTracks().forEach((track) => {
-      peerConnection.addTrack(track, localStream);
-    });
-
-    peerConnection.ontrack = async (event) => {
-      event.streams[0].getTracks().forEach((track) => {
-        remoteStream.addTrack(track);
-      });
-      // document.getElementById("user-2").srcObject = event.streams[0];
-      document.getElementById("userLeftMessage").style.display = "none";
-      document.getElementById("mute-speaker-btn").style.display = "block";
-    };
-
-    peerConnection.onicecandidate = async (event) => {
-      if (event.candidate) {
-        console.log("New ICE candidate:", event);
-        socket.emit(
-          "sendMessage",
-          JSON.stringify({
-            room,
-            type: "candidate",
-            candidate: event.candidate,
-          })
-        );
+      if (!localStream) {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        document.getElementById(`user-${socket.id}`).srcObject = localStream;
       }
-    };
 
-    peerConnection.onicecandidateerror = async (event) => {
-      console.log("ice candidate error", JSON.stringify(event));
-    };
+      localStream.getTracks().forEach((track) => {
+        peerConnection[socketId].addTrack(track, localStream);
+      });
+
+      peerConnection[socketId].ontrack = async (event) => {
+        event.streams[0].getTracks().forEach((track) => {
+          remoteStream[socketId].addTrack(track);
+        });
+        // document.getElementById("user-2").srcObject = event.streams[0];
+        document.getElementById("userLeftMessage").style.display = "none";
+        document.getElementById("mute-speaker-btn").style.display = "block";
+      };
+
+      peerConnection[socketId].onicecandidate = async (event) => {
+        if (event.candidate) {
+          console.log("New ICE candidate:", event);
+          socket.emit(
+            "sendMessage",
+            JSON.stringify({
+              room,
+              type: "candidate",
+              candidate: event.candidate,
+            })
+          );
+        }
+      };
+
+      peerConnection[socketId].onicecandidateerror = async (event) => {
+        console.log("ice candidate error", JSON.stringify(event));
+      };
+    } catch (ex) {
+      console.error("Error while calling createPeerConnection", ex);
+    }
   };
 
   const createOffer = async (socketId) => {
-    await createPeerConnection(socketId);
+    try {
+      await createPeerConnection(socketId);
 
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
+      const offer = await peerConnection[socketId].createOffer();
+      await peerConnection[socketId].setLocalDescription(offer);
 
-    console.log("Offer:", offer, socket.id, socketId);
-    socket.emit(
-      "sendMessage",
-      JSON.stringify({
-        room,
-        type: "offer",
-        offer,
-      })
-    );
+      console.log("Offer:", offer, socketId);
+      socket.emit(
+        "sendMessage",
+        JSON.stringify({
+          room,
+          type: "offer",
+          offer,
+        })
+      );
+    } catch (ex) {
+      console.error("Error while calling createOffer", ex);
+    }
   };
 
   const createAnswer = async (socketId, offer) => {
-    await createPeerConnection(socketId);
+    try {
+      await createPeerConnection(socketId);
 
-    await peerConnection.setRemoteDescription(offer);
+      await peerConnection[socketId].setRemoteDescription(
+        new RTCSessionDescription(offer)
+      );
 
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
+      const answer = await peerConnection[socketId].createAnswer();
+      await peerConnection[socketId].setLocalDescription(answer);
 
-    console.log("Answer:", answer);
-    socket.emit(
-      "sendMessage",
-      JSON.stringify({
-        room,
-        type: "answer",
-        answer,
-      })
-    );
+      console.log("Answer:", answer);
+      socket.emit(
+        "sendMessage",
+        JSON.stringify({
+          room,
+          type: "answer",
+          answer,
+        })
+      );
+    } catch (ex) {
+      console.error("Error while calling createAnswer", ex);
+    }
   };
 
-  const addAnswer = async (answer) => {
-    if (!peerConnection.currentRemoteDescription) {
-      peerConnection.setRemoteDescription(answer);
+  const addAnswer = async (answer, socketId) => {
+    try {
+      if (peerConnection[socketId].currentRemoteDescription === null) {
+        await peerConnection[socketId].setRemoteDescription(
+          new RTCSessionDescription(answer)
+        );
+      }
+    } catch (ex) {
+      console.error("Error while calling addAnswer", ex);
     }
   };
 
@@ -145,44 +165,40 @@ if (!room) {
   };
 
   const handleOnMessageFromPeer = async (message) => {
-    message = JSON.parse(message);
-    console.log(message);
+    try {
+      message = JSON.parse(message);
+      switch (message.type) {
+        case "offer":
+          await createAnswer(message.socketId, message.offer);
+          break;
 
-    switch (message.type) {
-      case "offer":
-        await createAnswer(message.socketId, message.offer);
-        break;
+        case "candidate":
+          if (peerConnection[message.socketId]) {
+            peerConnection[message.socketId].addIceCandidate(
+              new RTCIceCandidate(message.candidate)
+            );
+          }
+          break;
 
-      case "candidate":
-        if (peerConnection) {
-          peerConnection.addIceCandidate(message.candidate);
-        }
-        break;
+        case "answer":
+          await addAnswer(message.answer, message.socketId);
+          break;
 
-      case "answer":
-        await addAnswer(message.answer);
-        break;
-
-      default:
-        break;
+        default:
+          break;
+      }
+    } catch (ex) {
+      console.error("Error while calling handleOnMessageFromPeer", ex);
     }
   };
 
   const handleUserLeft = async () => {
     socket.emit("leaveRoom", room);
-    room = null;
   };
 
-  const handleUserLeftRoom = async () => {
-    // document.getElementById("user-2").style.display = "none";
-    // document
-    //   .getElementById("video-container")
-    //   .classList.add("video-devices-single");
-    // document
-    //   .getElementById("video-container")
-    //   .classList.remove("video-devices");
-    document.getElementById("user-2").style.display = "none";
-    document.getElementById("user-1").classList.remove("smallFrame");
+  const handleUserLeftRoom = async (socketId) => {
+    document.getElementById(`user-${socketId}`).remove();
+    document.getElementById(`user-${socket.id}`).classList.remove("smallFrame");
     document.getElementById("mute-speaker-btn").style.display = "none";
     document.getElementById("userLeftMessage").style.display = "block";
     document.getElementById("userLeftMessage").innerText =
@@ -190,7 +206,6 @@ if (!room) {
   };
 
   const initializeChannelAndListeners = async () => {
-    socket.emit("addRoom", room);
     socket.on("userJoined", handleUserJoined);
     socket.on("userleft", handleUserLeft);
     socket.on("userLeftRoom", handleUserLeftRoom);
@@ -239,19 +254,29 @@ if (!room) {
   };
 
   const muteOtherUser = async () => {
-    const audioTrack = remoteStream
-      .getTracks()
-      .find((track) => track.kind === "audio");
+    // const audioTrack = remoteStream
+    //   .getTracks()
+    //   .find((track) => track.kind === "audio");
+    // if (audioTrack.enabled) {
+    //   audioTrack.enabled = false;
+    //   document.getElementById("mute-speaker-btn").style.backgroundColor =
+    //     "rgb(128, 128, 128)";
+    // } else {
+    //   audioTrack.enabled = true;
+    //   document.getElementById("mute-speaker-btn").style.backgroundColor =
+    //     "rgb(65, 105, 225)";
+    // }
+  };
 
-    if (audioTrack.enabled) {
-      audioTrack.enabled = false;
-      document.getElementById("mute-speaker-btn").style.backgroundColor =
-        "rgb(128, 128, 128)";
-    } else {
-      audioTrack.enabled = true;
-      document.getElementById("mute-speaker-btn").style.backgroundColor =
-        "rgb(65, 105, 225)";
-    }
+  const addUserToDom = async (userId, muted = false) => {
+    console.log("+++++++++++++++++++++++MUTED++++++++++++++", muted);
+    const video = document.createElement("video");
+    video.id = `user-${userId}`;
+    video.classList.add("video-device");
+    video.autoplay = true;
+    video.muted = muted;
+    video.playsInline = true;
+    document.getElementById("video-container").appendChild(video);
   };
 
   window.addEventListener("beforeunload", handleUserLeft);
